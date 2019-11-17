@@ -10,11 +10,6 @@ login = jsn["login"]
 password = jsn["password"]
 me = tabun_api.User(login=login, passwd=password)
 p = "C:/Users/User/PycharmProjects/site/"
-bot_layes = ["BOT", "BOT_WING"]
-ears = ["EARS"]
-emotes = ["EMOTES"]
-blink = ["BLINK"]
-top = ["TOP_NAME"]
 available = []
 available_chars = []
 keys = {
@@ -181,7 +176,6 @@ class Pony():
             file.write(json.dumps(jsn, sort_keys=True, indent=4, separators=(',', ': ')))
         return link
 
-
     def make_preview(self):
         folder = "{0}\{1}".format("static", self.name)
         try:
@@ -208,6 +202,7 @@ class Pony():
                 if self.top_name: pr = Image.alpha_composite(pr, self.top_maneimg.convert('RGBA'))
                 pr.save("{0}\{1}.png".format(folder, i))
 
+
     def get_img_64(self, file):
         image = Image.open(file)
         with open(file, "rb") as image_file:
@@ -227,6 +222,8 @@ class Pony():
         bbox = (left, upper, width, lower)
         working_slice = im.crop(bbox)
         return working_slice
+
+
 names_pegasus = ["TS", "FS", "RD"]
 names_unicorns = ["SG"]
 names_earth = ["BG"]
