@@ -150,15 +150,15 @@ class Pony():
                 if ("visible" in data[i]):
                     example += svg_elemet.format(ear, data[i], duration)
         if self.emotes:
-            example+=svg_simple.format(self.emotes64[int(id)])
+            example += svg_simple.format(self.emotes64[int(id)])
         if self.blink:
-            example+=svg_simple.format(self.blink64)
+            example += svg_simple.format(self.blink64)
         if self.mane:
             for i, mane in enumerate(self.top_name):
                 if ("visible" in data[i]):
                     example += svg_elemet.format(mane, data[i], duration)
         if self.magic and magic:
-            example+=svg_simple.format(self.magic64)
+            example += svg_simple.format(self.magic64)
 
         with open("dellme.svg", "w") as svg:
             svg.write(svg_template.format(example))
@@ -166,11 +166,15 @@ class Pony():
         link = me.upload_image_file("dellme.svg",title=text)
         remove("dellme.svg")
         key = link[link.index("storage") + 8:link.index(".svg")]
-        with open("messeges.json") as file:
-            jsn = json.load(file)
-        jsn[key] = text
+        logs = {}
+        try:
+            with open("messeges.json") as file:
+                logs = json.load(file)
+        except FileNotFoundError:
+            pass
+        logs[key] = text
         with open("messeges.json", "w") as file:
-            file.write(json.dumps(jsn, sort_keys=True, indent=4, separators=(',', ': ')))
+            file.write(json.dumps(logs, sort_keys=True, indent=4, separators=(',', ': ')))
         return link
 
     def make_preview(self):

@@ -4,7 +4,6 @@ from shifer import *
 app = Flask(__name__)
 
 
-
 @app.route('/')
 def hello_world():
     z = zip(emotions_pegasus + emotions_unicorns + emotions_earth, names_pegasus + names_unicorns + names_earth)
@@ -24,10 +23,14 @@ def testt():
         area = request.form['textarea']
         if "storage" in area and area[-1] == 'g':
             area = area[area.index("storage") + 8:-4]
-            with open("messeges.json") as file:
-                jsn = json.load(file)
-            if area in jsn.keys():
-                text = jsn[area]
+            logs = {}
+            try:
+                with open("messeges.json") as file:
+                    logs = json.load(file)
+            except FileNotFoundError:
+                pass
+            if area in logs.keys():
+                text = logs[area]
                 print("\n" in text)
                 if "secret" in request.form.keys():
                     return render_template("ушифратор.html", search=text,
@@ -86,9 +89,7 @@ def processing():
 
 
 if __name__ == '__main__':
-    with open("config.json") as file:
-        jsn = json.load(file)
-        local = jsn["local"]
+    local = jsn["local"]
     if local:
         app.run(debug=True)
     else:
