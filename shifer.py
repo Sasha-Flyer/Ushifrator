@@ -84,45 +84,45 @@ class Pony():
         self.emotes = emotes
         if bot:
 
-            file = "new\{0}\{1}.png".format(self.name, self.name + "_" + "BOT")
+            file = "new/{0}/{1}.png".format(self.name, self.name + "_" + "BOT")
             self.botimg, self.bot64 = self.get_img_64(file)
         self.bot_wing = bot_wing
         if bot_wing:
-            file = "new\{0}\{1}.png".format(self.name, self.name + "_" + "BOT_WING")
+            file = "new/{0}/{1}.png".format(self.name, self.name + "_" + "BOT_WING")
             self.bot_wingimg, self.bot_wing64 = self.get_img_64(file)
         if ears:
             self.ears = []
             for i in range(10):
-                file = "new\{0}\{1}.png".format(self.name, "test" + self.name + "_" + "EARS" + str(i) + "_opt")
+                file = "new/{0}/{1}.png".format(self.name, "test" + self.name + "_" + "EARS" + str(i) + "_opt")
                 self.ears.append(self.base_64(file))
-            file = "new\{0}\{1}.png".format(self.name, "test" + self.name + "_" + "EARS" + str(0) + "_opt")
+            file = "new/{0}/{1}.png".format(self.name, "test" + self.name + "_" + "EARS" + str(0) + "_opt")
             self.earsimg = self.get_first_frame(file)
         if emotes:
 
             self.emotesimg = []
             self.emotes64 = []
-            start_file = "new\{0}\{1}".format(self.name, self.name + "_" + "EMOTES")
+            start_file = "new/{0}/{1}".format(self.name, self.name + "_" + "EMOTES")
             for i in range(1, 29):
-                file = "{0}\q{1:04d}.png".format(start_file, i)
+                file = "{0}/q{1:04d}.png".format(start_file, i)
                 img, b64 = self.get_img_64(file)
                 self.emotesimg.append(img)
                 self.emotes64.append(b64)
         if blink:
             self.blink = True
-            file = "new\{0}\{1}.png".format(self.name, "test" + self.name + "_" + "BLINK" + str(81) + "_opt")
+            file = "new/{0}/{1}.png".format(self.name, "test" + self.name + "_" + "BLINK" + str(81) + "_opt")
             self.blinkimg = self.get_first_frame(file)
             self.blink64 = self.base_64(file)
         self.mane = top_name
         if top_name:
             self.top_name = []
             for i in range(10):
-                file = "new\{0}\{1}.png".format(self.name, "test" + self.name + "_" + "TOP_MANE" + str(i) + "_opt")
+                file = "new/{0}/{1}.png".format(self.name, "test" + self.name + "_" + "TOP_MANE" + str(i) + "_opt")
                 self.top_name.append(self.base_64(file))
-            file = "new\{0}\{1}.png".format(self.name, "test" + self.name + "_" + "TOP_MANE" + str(0) + "_opt")
+            file = "new/{0}/{1}.png".format(self.name, "test" + self.name + "_" + "TOP_MANE" + str(0) + "_opt")
             self.top_maneimg = self.get_first_frame(file)
         self.magic = magic
         if magic:
-            file = "new\{0}\{1}.png".format(self.name, self.name + "_" + "MAGIC")
+            file = "new/{0}/{1}.png".format(self.name, self.name + "_" + "MAGIC")
             self.magicimg = self.get_first_frame(file)
             self.magic64 = self.base_64(file)
       #  self.make_preview()
@@ -174,7 +174,7 @@ class Pony():
         return link
 
     def make_preview(self):
-        folder = "{0}\{1}".format("static", self.name)
+        folder = "{0}/{1}".format("static", self.name)
         try:
             mkdir(folder)
         except:
@@ -186,9 +186,9 @@ class Pony():
             pr = Image.alpha_composite(pr, emote.convert('RGBA'))
             pr = Image.alpha_composite(pr, self.blinkimg.convert('RGBA'))
             if self.mane: pr = Image.alpha_composite(pr, self.top_maneimg.convert('RGBA'))
-            pr.save("{0}\{1}.png".format(folder, i))
+            pr.save("{0}/{1}.png".format(folder, i))
         if False and self.bot_wing: # крылья теперь только в SVG, этот блок не нужен.
-            folder = "{0}\{1}".format("static", self.name + "_" + "WING")
+            folder = "{0}/{1}".format("static", self.name + "_" + "WING")
             mkdir(folder)
             for i, emote in enumerate(self.emotesimg):
                 pr = Image.new("RGBA", (80, 80))
