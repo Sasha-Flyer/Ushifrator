@@ -1,0 +1,256 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta  charset="utf-8" name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, user-scalable=yes" />
+<title>Ушифратор</title>
+<style>
+
+.hidden {
+  display: none;
+}
+.show {
+  display: inLine !important;
+}
+    .clickable{cursor:pointer;}
+</style>
+</head>
+<body>
+<form action=""wing = ""  method="post" id="myform" >
+<div id="select-pony">
+  <h3>Выберите пони</h3>
+  {% for pegas in pegasus %}
+  <img src="http://ушифратор.рф/static/{{pegas}}/0.png" class="js-pony clickable" data-pony={{pegas}} data-race = "pegas" /><a href="#"></a>
+  {%endfor%}
+    {% for unicorn in unicorns %}
+  <img src="http://ушифратор.рф/static/{{unicorn}}/0.png" class="js-pony clickable" data-pony={{unicorn}} data-race = "unicorn" />
+  {%endfor%}
+      {% for eart in earth %}
+  <img src="http://ушифратор.рф/static/{{eart}}/0.png" class="js-pony clickable" data-pony={{eart}} data-race = "earth" />
+  {%endfor%}
+    <div id="save"> <span id="saveText">Ваши любимые пони:</span> <br>
+
+  </div>
+</div><!-- /select-pony -->
+
+<div id="select-emotion" class="hidden">
+  <h3>Выберите эмоцию</h3>
+  {% for emotion, pegas in emotions_pegasus %}
+  <div class="js-pony-emotion" data-pony={{pegas}}>
+    {% for id in emotion %}
+    <img src="http://ушифратор.рф/static/{{pegas}}/{{id}}.png" class="js-emotion clickable" data-emotion={{id}} />
+{%endfor%}
+  </div>
+  {%endfor%}
+  <a href="#" class="js-form-select" data-form="select-pony">Вернуться к выбору пони</a>
+</div><!-- /select-emotion -->
+
+<div id="select-options" class="hidden">
+  <h3>Выберите дополнительные настройки и ушифруйте сообщение</h3>
+    <img src="http://ушифратор.рф/static/TS/0.png" id="choose-pony" />
+  <div id = "options">
+    <input type="hidden" name="pony" />
+    <input type="hidden" name="emotion" />
+    <div id = "wings" class="hidden">
+    <input type="checkbox" name="wings" value="wings">Крылья<Br>
+      </div>
+     <div id = "magic" class="hidden">
+    <input type="checkbox" name="magic" value="magic">Активная магия<Br>
+     </div>
+    <p class="hidden">Как часто пони должна моргать?    Часто<input type="range" min="1" max="10" name="blink" value="6" step="0.5">Редко</p>
+    <p class="hidden">Как пони должна двигать ушками?   Быстро<input type="range" min="0.5" max="2" name="speed" value="1" step="0.1">Медленно</p>
+    <label for="secret">Введите сообщение
+        {% if save %}
+	    <textarea  cols = 30 rows = 5 name="secret" >{{save}}</textarea>
+        {% else %}
+        <textarea cols = 30 rows = 5 name="secret"></textarea>
+        {% endif %}
+            <a href="#" id="send" >Ушифровать сообщение</a>
+      </label>
+  </div>
+
+  <br>
+  <a href="#" class="js-form-select" data-form="select-pony">Вернуться к выбору пони</a>
+  <br>
+  <a href="#" class="js-form-select" data-form="select-emotion">Вернуться к выбору эмоции</a>
+
+</div><!-- /select-emotion -->
+      {% if message %}
+    <input type="text" value='{{ message }}' id="myInput">
+
+    <!-- The button used to copy the text -->
+    <button type="button" onclick="myFunction()">Скопировать ушифр</button>
+    {% endif %}
+   {% if error %}
+    <font color="red">{{ error }} </font>
+
+    {% endif %}
+
+
+<script>
+var fav =  document.getElementById("save");
+var wings =  document.getElementById("wings");
+var magic =  document.getElementById("magic");
+var save = null;
+if (localStorage.save) {
+  try {
+    save = JSON.parse(localStorage.save);
+  } catch(e) {}
+}
+if (save == null || !("pony" in save)|| !("emotion" in save) || !("race" in save)) {
+  save = {'pony': [], 'emotion': [], 'race': []};
+  fav.classList.add("hidden"); //Скрываем список избранного, так как его нет
+}
+else { //показываем избранных пони
+    for (var i = 0; i < save['pony'].length; i++) {
+        var img = document.createElement('img');
+        img.src = "http://ушифратор.рф/static/" + save['pony'][i] + "/" + save['emotion'][i] + ".png";
+        img.dataset.pony = save['pony'][i];
+        img.dataset.race = save['race'][i];
+        img.dataset.emotion = save['emotion'][i];
+        img.className = "fav";
+        img.classList.add("clickable");
+        console.log(img);
+        fav.appendChild(img);
+    }
+}
+if (save['pony'].length === 1) document.getElementById('saveText').textContent  = "Ваша любимая пони:";
+// Выбранные пользователем опции
+var f = document.forms["myform"];
+var pony = null;
+var race = null
+var emotion = null;
+var last_element = null;
+var image = document.getElementById("choose-pony")
+// Переключалка отображаемой формы
+var currentFormId = 'select-pony';
+//отправка формы
+ function submitform() {
+   var exists = false;
+   for (var i = 0; i < save.pony.length; i++) {
+     if (save.pony[i] == pony && save.emotion[i] == emotion) {
+       exists = true;
+       break;
+     }
+   }
+
+   if (!exists) {
+     { //добавлять в список избранного новую эмоцию
+       save.pony.push(pony);
+       save.emotion.push(emotion);
+       save.race.push(race);
+       if (save.pony.length > 10) { //лимит избранного - 10
+         save.pony.slice(0, 1);
+         save.emotion.slice(0, 1);
+         save.race.slice(0, 1);
+       }
+     }
+   }
+     localStorage.save = JSON.stringify(save);
+     f.pony.value = pony;
+     f.emotion.value = emotion;
+     f.submit();
+
+ }
+
+//переход на выбранную форму
+function goToForm(formId) {
+  if (currentFormId) {
+    document.getElementById(currentFormId).classList.add('hidden');
+  }
+  document.getElementById(formId).classList.remove('hidden');
+  currentFormId = formId;
+}
+
+// Отображаем эмоции только определённой пони
+function filterEmotionForm(pony) {
+  var emotionTableList = document.getElementsByClassName('js-pony-emotion');
+
+  for (var i = 0; i < emotionTableList.length; i++) {
+    if (!pony || emotionTableList[i].dataset.pony === pony) {
+      emotionTableList[i].classList.remove('hidden');
+    } else {
+      emotionTableList[i].classList.add('hidden');
+    }
+  }
+}
+
+// выбор пони
+function ponyClickEvent(event) {
+  pony = event.target.dataset.pony;
+  race = event.target.dataset.race;
+  filterEmotionForm(pony);
+  goToForm('select-emotion');
+}
+function  raceOptions() {
+   if (race == "unicorn") {
+     magic.classList.remove("hidden");
+     wings.classList.add("hidden");
+   }
+   else if (race == "pegas"){
+     magic.classList.add("hidden");
+     wings.classList.remove("hidden");
+   }
+   else{
+          magic.classList.add("hidden");
+     wings.classList.add("hidden");
+   }
+
+}
+//выбор эмоции
+function emotionClickEvent(event) {
+  emotion = event.target.dataset.emotion;
+  last_element = event.target;
+  image.src = event.target.src;
+  raceOptions();
+  goToForm('select-options');
+}
+//выбор избранной пони
+function favClickEvent(event) {
+  pony = event.target.dataset.pony;
+  filterEmotionForm(pony);
+  emotion = event.target.dataset.emotion;
+   race = event.target.dataset.race;
+  last_element = event.target;
+  image.src = event.target.src;
+  raceOptions();
+  goToForm('select-options');
+}
+//возвращение назад
+function formSelectClickEvent(event) {
+  goToForm(event.target.dataset.form);
+  // Отключаем стандартное поведение ссылки
+  event.preventDefault();
+  return false;
+}
+
+// Вешаем обработчики кликов на элементы
+var ponyList = document.getElementsByClassName('js-pony');
+for (var i = 0; i < ponyList.length; i++) {
+  ponyList[i].onclick = ponyClickEvent;
+}
+
+var emotionList = document.getElementsByClassName('js-emotion');
+for (i = 0; i < emotionList.length; i++) {
+  emotionList[i].onclick = emotionClickEvent;
+}
+var favs = document.getElementsByClassName('fav');
+for (i = 0; i < favs.length; i++) {
+  favs[i].onclick = favClickEvent;
+}
+var formSelectList = document.getElementsByClassName('js-form-select');
+for (i = 0; i < formSelectList.length; i++) {
+  formSelectList[i].onclick = formSelectClickEvent;
+}
+var send = document.getElementById("send");
+send.onclick = submitform;
+function myFunction() {
+      var copyText = document.getElementById("myInput");
+      copyText.select();
+      copyText.setSelectionRange(0, 99999); /*For mobile devices*/
+      document.execCommand("copy");
+    }
+</script>
+</form>
+</body>
+</html>
