@@ -1,14 +1,8 @@
 from flask import Flask, render_template, request
 from shifer import *
-from django import template
 
 app = Flask(__name__)
-register = template.Library()
 
-
-@register.simple_tag
-def include_anything(file_name):
-    return open(file_name).read()
 
 
 @app.route('/')
