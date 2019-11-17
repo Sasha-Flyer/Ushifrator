@@ -4,7 +4,7 @@ import tabun_api
 import json
 import base64
 
-with open("C:\config.json") as file:
+with open("config.json") as file:
     jsn = json.load(file)
 login = jsn["login"]
 password = jsn["password"]
