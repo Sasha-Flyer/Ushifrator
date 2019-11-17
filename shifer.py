@@ -9,9 +9,6 @@ with open("C:\config.json") as file:
 login = jsn["login"]
 password = jsn["password"]
 me = tabun_api.User(login=login, passwd=password)
-p = "C:/Users/User/PycharmProjects/site/"
-available = []
-available_chars = []
 keys = {
     "а": "1",
     "б": "93",
