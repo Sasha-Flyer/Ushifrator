@@ -1,4 +1,5 @@
 {
 "login": "Random",
-"password": "12345678"
+"password": "12345678",
+  "local": true
 }

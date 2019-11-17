@@ -86,6 +86,10 @@ def processing():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=80, debug=False)
-    # app.run(debug=True)
-
+    with open("config.json") as file:
+        jsn = json.load(file)
+        local = jsn["local"]
+    if local:
+        app.run(debug=True)
+    else:
+        app.run(host='0.0.0.0', port=80, debug=False)
