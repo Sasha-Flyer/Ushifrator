@@ -225,7 +225,7 @@ class Pony():
         logs[key] = text
         with open("messeges.json", "w") as file:
             file.write(json.dumps(logs, sort_keys=True, indent=4, separators=(',', ': ')))
-        return link
+        return link, code
 
     def make_preview(self):
         folder = "{0}/{1}".format("static", self.name)

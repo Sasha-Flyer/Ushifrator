@@ -91,7 +91,8 @@ def processing():
                                emotions_unicorns=zip(emotions_unicorns, names_unicorns),
                                earth=names_earth, emotions_earth=zip(emotions_earth, names_earth),
                                error="Введите текст")
-    return render_template("ponychooser.html", message=ponies[pony].make_svg(id, text, wing, magic),
+    message, code = ponies[pony].make_svg(id, text, wing, magic)
+    return render_template("ponychooser.html", message=message, code=code,
                            pegasus=names_pegasus, emotions_pegasus=z, unicorns=names_unicorns,
                            emotions_unicorns=zip(emotions_unicorns, names_unicorns),
                            earth=names_earth, emotions_earth=zip(emotions_earth, names_earth))
