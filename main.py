@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request
+import re
 
 from tabun_api import TabunError
 from sys import modules as modules_imported
@@ -64,18 +65,19 @@ def testt():
 def processing():
     data = request.form
     id = data['emotion']
-    text = data['secret'].lower()
+    text = data['secret']
     pony = data['pony']
     wing = ("wings" in data.keys())
     magic = ("magic" in data.keys())
     z = zip(emotions_pegasus+emotions_unicorns+emotions_earth, names_pegasus+names_unicorns+names_earth)
     for char in text:
-        if char not in keys.keys():
+        if char.lower() not in keys.keys():
+            regex = re.compile(re.escape(char), re.IGNORECASE)
             return render_template("ponychooser.html", pegasus=names_pegasus, emotions_pegasus=z,
                                    unicorns=names_unicorns,
                                    emotions_unicorns=zip(emotions_unicorns, names_unicorns),
                                    earth=names_earth, emotions_earth=zip(emotions_earth, names_earth),
-                                   error="Неподдерживаемый символ: {0}".format(char), save = text.replace(char, ""))
+                                   error="Неподдерживаемый символ: {0}".format(char), save = regex.sub('', text))
     if len(text) > 1000:
         return render_template("ponychooser.html", pegasus=names_pegasus, emotions_pegasus=z,
                                unicorns=names_unicorns,
