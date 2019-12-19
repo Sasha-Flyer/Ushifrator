@@ -27,8 +27,6 @@ sys.path.insert(0, '/usr/share/htdocs/Ushifrator')
 os.chdir('/usr/share/htdocs/Ushifrator')
 from main import app as application
 ```
-Здесь `/usr/share/htdocs` надо заменить на путь к корню веб-сервера
-(где в подкаталоге `Ushifrator` лежит код из git-репозитория)
 
 В `httpd.conf` или включаемый из него конфиг, в секцию,
 относящуюся к серверу или виртуальному хосту (на тот же уровень,
@@ -37,3 +35,7 @@ from main import app as application
 ```
 WSGIScriptAlias / /usr/share/htdocs/Ushifrator.wsgi
 ```
+
+В обоих местах `/usr/share/htdocs` надо заменить на путь к корню веб-сервера
+(где в подкаталоге `Ushifrator` лежит код из git-репозитория).
+
