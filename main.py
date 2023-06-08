@@ -1,11 +1,19 @@
 from flask import Flask, render_template, request
-from shifer import *
+import re
+
+from tabun_api import TabunError
+from sys import modules as modules_imported
+try:
+    from shifer import *
+except TabunError as tabun_ex: # Не падаем в случае, если табун недоступен, но падаем в любом другом
+    pass
 
 app = Flask(__name__)
 
-
 @app.route('/')
 def hello_world():
+    if "shifer" not in modules_imported:
+        return render_template("ушифратор.html", search_error="Ошибка связи с Табуном. Возможно, он упал. " + tabun_ex.message)
     z = zip(emotions_pegasus + emotions_unicorns + emotions_earth, names_pegasus + names_unicorns + names_earth)
     return render_template("ponychooser.html", pegasus=names_pegasus, emotions_pegasus=z, unicorns=names_unicorns,
                            emotions_unicorns=zip(emotions_unicorns, names_unicorns),
@@ -57,18 +65,19 @@ def testt():
 def processing():
     data = request.form
     id = data['emotion']
-    text = data['secret'].lower()
+    text = data['secret']
     pony = data['pony']
     wing = ("wings" in data.keys())
     magic = ("magic" in data.keys())
     z = zip(emotions_pegasus+emotions_unicorns+emotions_earth, names_pegasus+names_unicorns+names_earth)
     for char in text:
-        if char not in keys.keys():
+        if char.lower() not in keys.keys():
+            regex = re.compile(re.escape(char), re.IGNORECASE)
             return render_template("ponychooser.html", pegasus=names_pegasus, emotions_pegasus=z,
                                    unicorns=names_unicorns,
                                    emotions_unicorns=zip(emotions_unicorns, names_unicorns),
                                    earth=names_earth, emotions_earth=zip(emotions_earth, names_earth),
-                                   error="Неподдерживаемый символ: {0}".format(char), save = text.replace(char, ""))
+                                   error="Неподдерживаемый символ: {0}".format(char), save = regex.sub('', text))
     if len(text) > 1000:
         return render_template("ponychooser.html", pegasus=names_pegasus, emotions_pegasus=z,
                                unicorns=names_unicorns,
@@ -82,7 +91,8 @@ def processing():
                                emotions_unicorns=zip(emotions_unicorns, names_unicorns),
                                earth=names_earth, emotions_earth=zip(emotions_earth, names_earth),
                                error="Введите текст")
-    return render_template("ponychooser.html", message=ponies[pony].make_svg(id, text, wing, magic),
+    message, code = ponies[pony].make_svg(id, text, wing, magic)
+    return render_template("ponychooser.html", message=message, code=code,
                            pegasus=names_pegasus, emotions_pegasus=z, unicorns=names_unicorns,
                            emotions_unicorns=zip(emotions_unicorns, names_unicorns),
                            earth=names_earth, emotions_earth=zip(emotions_earth, names_earth))

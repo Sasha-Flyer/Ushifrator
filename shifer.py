@@ -42,7 +42,39 @@ keys = {
     "э": "57",
     "ю": "58",
     "я": "59",
-    "й": "61",
+    "й": "552",  # Раньше 61, но это можно было спутать с "а"
+
+    # Латинские буквы - соответствуют русским, таким образом,
+    # после пропуска 55х-кодов можно будет примерно понять ту
+    # расшифровку, которая была изначально, но русским транслитом
+    "a": "1",
+    "b": "93",
+    "w": "95",
+    "g": "96",
+    "d": "97",
+    "e": "4",
+    "v": "62",  # Да-да, здесь теперь тоже можно делать "инжалид дежице"
+    "z": "22",
+    "i": "23",
+    "k": "29",
+    "l": "25",
+    "m": "26",
+    "n": "27",
+    "o": "0",
+    "p": "28",
+    "r": "63",
+    "s": "65",
+    "t": "32",
+    "u": "33",
+    "f": "35",
+    "h": "36",
+    "c": "37",
+    "x": "38",
+    "y": "53",
+    "j": "56",
+    "q": "59",
+
+    # Прочие символы
     " ": "67",
     ",": "68",
     ".": "69",
@@ -61,12 +93,17 @@ keys = {
     "8": "88",
     "9": "89",
     "+": "92",
-    "-": "93",
-    "=": "95",
-    "\r": "97",
+    "-": "553",  # Раньше 93, но это конфликтовало с "б"
+    "=": "555",  # Раньше 95, но это конфликтовало с "в"
+    "\r": "557", # Раньше 97, но это конфликтовало с "д"
     "\n": "98",
-    "0": "96"
+    "0": "556"   # Раньше 96, но это конфликтовало с "г"
+    #    "558"     - смена кириллицы на латиницу (и наоборот)
+    #    "559"     - смена нижнего регистра на верхний (и наоборот)
 }
+
+rus_chars = "абвгдеёжзийклмнопрстуфхцчшщъыьэюя"
+eng_chars = "abcdefghijklmnopqrstuvwxyz"
 
 svg_template = '''<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg xmlns="http://www.w3.org/2000/svg" height="80" width="80" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 80 80">{0}</svg>'''
@@ -130,8 +167,21 @@ class Pony():
     def make_svg(self, id, text, wing = False, magic = False):
         code = ""
 
+        case_up = False
+        lang_en = False
+
         for char in text:
-            code += keys[char]
+            lchar = char.lower()
+
+            if (lang_en and lchar in rus_chars) or (not lang_en and lchar in eng_chars):
+                lang_en = not lang_en
+                code += "558"
+
+            if (case_up and char.islower()) or (not case_up and char.isupper()):
+                case_up = not case_up
+                code += "559"
+
+            code += keys[lchar]
 
         duration = len(code)
         data = ['', '', '', '', '', '', '', '', '', '']
@@ -175,7 +225,7 @@ class Pony():
         logs[key] = text
         with open("messeges.json", "w") as file:
             file.write(json.dumps(logs, sort_keys=True, indent=4, separators=(',', ': ')))
-        return link
+        return link, code
 
     def make_preview(self):
         folder = "{0}/{1}".format("static", self.name)
